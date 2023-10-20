@@ -10,23 +10,29 @@ Text Domain: fly-images
 
 namespace JB\FlyImages;
 
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+defined('ABSPATH') or die('No script kiddies please!');
 
 /**
  * Plugin path.
  */
-define( 'JB_FLY_PLUGIN_PATH', __DIR__ );
+define('JB_FLY_PLUGIN_PATH', __DIR__);
 
 /**
  * Require files.
  */
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once JB_FLY_PLUGIN_PATH . '/inc/class-fly-cli.php';
+if (defined('WP_CLI') && WP_CLI) {
+    require_once JB_FLY_PLUGIN_PATH.'/inc/class-fly-cli.php';
 }
-require_once JB_FLY_PLUGIN_PATH . '/inc/namespace.php';
-require_once JB_FLY_PLUGIN_PATH . '/inc/helpers.php';
+require_once JB_FLY_PLUGIN_PATH.'/inc/namespace.php';
+require_once JB_FLY_PLUGIN_PATH.'/inc/helpers.php';
 
 /**
- * Actions.
+ * Initialize plugin.
  */
-add_action( 'init', __NAMESPACE__ . '\\init' );
+add_action(
+    'init',
+    static function () {
+        $fly_images = Core::get_instance();
+        $fly_images->init();
+    }
+);

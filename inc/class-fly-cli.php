@@ -11,7 +11,8 @@ class Fly_CLI extends WP_CLI_Command {
 	 *
 	 * @subcommand delete-all
 	 */
-	public function delete_all( $args, $args_assoc ) {
+	public function delete_all( $args, $args_assoc ): void
+    {
 		$fly_images = Core::get_instance();
 		WP_CLI::line( esc_html__( 'Deleting all fly images...', 'fly-images' ) );
 		if ( $fly_images->delete_all_fly_images() ) {
@@ -27,7 +28,8 @@ class Fly_CLI extends WP_CLI_Command {
 	 * @subcommand delete
 	 * @synopsis <attachment-ids>
 	 */
-	public function delete_ids( $args, $args_assoc ) {
+	public function delete_ids( $args, $args_assoc ): void
+    {
 		$ids = array_map( 'trim', explode( ',', $args[0] ) );
 		if ( empty( $ids ) ) {
 			WP_CLI::error( esc_html__( 'Please enter valid IDs.', 'fly-images' ) );
