@@ -237,6 +237,12 @@ class Core {
 		// Get the attachment image
 		$image = wp_get_attachment_metadata( $attachment_id );
 		if ( false !== $image && $image ) {
+
+            // Filter
+            if ( ! apply_filters( 'fly_mime_type', true, get_post_mime_type( $attachment_id ) ) ) {
+                return array();
+            }
+
 			// Determine width and height based on size
 			switch ( gettype( $size ) ) {
 				case 'string':
