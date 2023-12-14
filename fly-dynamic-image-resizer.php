@@ -6,9 +6,12 @@ Version: 2.0.8
 Author: Junaid Bhura
 Author URI: https://junaid.dev
 Text Domain: fly-images
+Requires PHP: 8.0
 */
 
 namespace JB\FlyImages;
+
+use WP_CLI;
 
 defined('ABSPATH') or die('No script kiddies please!');
 
@@ -34,7 +37,7 @@ require_once JB_FLY_PLUGIN_PATH.'/vendor/autoload.php';
 add_action(
     'init',
     static function () {
-        $fly_images = Core::get_instance();
+        $fly_images = \JB\FlyImages\Core::get_instance();
         $fly_images->init();
     }
 );

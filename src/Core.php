@@ -42,8 +42,12 @@ class Core
     /**
      * Get the path to the directory where all Fly images are stored.
      */
-    public function get_fly_dir(string $path = ''): string
+    public function get_fly_dir(string $path = '', bool $emptyFlyPathFirst = false): string
     {
+        if ($emptyFlyPathFirst) {
+            $this->_fly_dir = '';
+        }
+
         if (empty($this->_fly_dir)) {
             $wp_upload_dir = wp_upload_dir();
 
@@ -56,7 +60,7 @@ class Core
     /**
      * Create fly images directory if it doesn't already exist.
      */
-    function check_fly_dir(): void
+    public function check_fly_dir(): void
     {
         if (!is_dir($this->_fly_dir)) {
             wp_mkdir_p($this->_fly_dir);
@@ -77,8 +81,8 @@ class Core
     public function admin_menu_item(): void
     {
         add_management_page(
-            __('Fly Images', 'fly-images'),
-            __('Fly Images', 'fly-images'),
+            __('Fly Images', 'fly-dynamic-image-resizer'),
+            __('Fly Images', 'fly-dynamic-image-resizer'),
             $this->_capability,
             'fly-images',
             [$this, 'options_page']
@@ -95,7 +99,7 @@ class Core
         }
 
         $url = wp_nonce_url(admin_url('tools.php?page=fly-images&delete-fly-image&ids='.$post->ID), 'delete_fly_image', 'fly_nonce');
-        $actions['fly-image-delete'] = '<a href="'.esc_url($url).'" title="'.esc_attr(__('Delete all cached image sizes for this image', 'fly-images')).'">'.__('Delete Fly Images', 'fly-images').'</a>';
+        $actions['fly-image-delete'] = '<a href="'.esc_url($url).'" title="'.esc_attr(__('Delete all cached image sizes for this image', 'fly-dynamic-image-resizer')).'">'.__('Delete Fly Images', 'fly-dynamic-image-resizer').'</a>';
 
         return $actions;
     }
@@ -148,7 +152,7 @@ class Core
         ) {
             // Delete all fly images.
             $this->delete_all_fly_images();
-            echo '<div class="updated"><p>'.esc_html__('All cached images created on the fly have been deleted.', 'fly-images').'</p></div>';
+            echo '<div class="updated"><p>'.esc_html__('All cached images created on the fly have been deleted.', 'fly-dynamic-image-resizer').'</p></div>';
         } elseif (
             isset($_GET['delete-fly-image'], $_GET['ids'], $_GET['fly_nonce']) // Input var okay.
             && wp_verify_nonce(sanitize_key($_GET['fly_nonce']), 'delete_fly_image') // Input var okay.
@@ -159,7 +163,7 @@ class Core
                 foreach ($ids as $id) {
                     $this->delete_attachment_fly_images($id);
                 }
-                echo '<div class="updated"><p>'.esc_html__('Deleted all fly images for this image.', 'fly-images').'</p></div>';
+                echo '<div class="updated"><p>'.esc_html__('Deleted all fly images for this image.', 'fly-dynamic-image-resizer').'</p></div>';
             }
         }
 
@@ -235,7 +239,7 @@ class Core
                     }
                     $width = $image_size['size'][0];
                     $height = $image_size['size'][1];
-                    $crop = isset($crop) ? $crop : $image_size['crop'];
+                    $crop = $crop ?? $image_size['crop'];
                     break;
                 case 'array':
                     $width = $size[0];
@@ -325,7 +329,7 @@ class Core
             $hwstring = image_hwstring($image['width'], $image['height']);
             $size_class = $size;
             if (is_array($size_class)) {
-                $size_class = join('x', $size);
+                $size_class = implode('x', $size);
             }
             $attachment = get_post($attachment_id);
             $default_attr = [
@@ -410,7 +414,6 @@ class Core
      */
     public function blog_switched(): void
     {
-        $this->_fly_dir = '';
-        $this->_fly_dir = apply_filters('fly_dir_path', $this->get_fly_dir());
+        $this->_fly_dir = apply_filters('fly_dir_path', $this->get_fly_dir(emptyFlyPathFirst: true));
     }
 }
