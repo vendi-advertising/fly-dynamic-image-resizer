@@ -1,6 +1,6 @@
 name: Coding Standards and Tests
 
-on: [ push ]
+on: [ push, workflow_dispatch ]
 
 env:
   WP_TESTS_DIR: /home/runner/wp-tests/wordpress-tests-lib
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '7.4' ]
+        php-version: [ '8.0', '8.1', '8.2', '8.3' ]
         wordpress-version: [ latest ]
     services:
       mysql:
