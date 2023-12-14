@@ -53,7 +53,7 @@ jobs:
     - name: Install Composer dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: |
-        composer global require "phpunit/phpunit=9"
+        composer global require "phpunit/phpunit"
         composer global require wp-coding-standards/wpcs
         composer global require yoast/phpunit-polyfills
         $HOME/.composer/vendor/bin/phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
