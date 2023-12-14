@@ -57,6 +57,7 @@ jobs:
         composer global require "phpunit/phpunit"
         composer global require wp-coding-standards/wpcs
         composer global require yoast/phpunit-polyfills
+        composer install --no-dev  --working-dir=/home/runner/work/
         $HOME/.composer/vendor/bin/phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
 
     - name: Install WordPress test suite
