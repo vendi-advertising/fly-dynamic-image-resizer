@@ -21,10 +21,12 @@ define('JB_FLY_PLUGIN_PATH', __DIR__);
  * Require files.
  */
 if (defined('WP_CLI') && WP_CLI) {
-    require_once JB_FLY_PLUGIN_PATH.'/inc/class-fly-cli.php';
+    require_once JB_FLY_PLUGIN_PATH.'/src/Fly_CLI.php';
+    WP_CLI::add_command('fly-images', __NAMESPACE__.'\\Fly_CLI');
 }
-require_once JB_FLY_PLUGIN_PATH.'/inc/namespace.php';
+require_once JB_FLY_PLUGIN_PATH.'/src/Core.php';
 require_once JB_FLY_PLUGIN_PATH.'/inc/helpers.php';
+require_once JB_FLY_PLUGIN_PATH.'/vendor/autoload.php';
 
 /**
  * Initialize plugin.

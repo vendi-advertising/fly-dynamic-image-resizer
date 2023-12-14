@@ -32,11 +32,11 @@ class Core
 
         $this->check_fly_dir();
 
-        add_action('admin_menu', array($this, 'admin_menu_item'));
-        add_filter('media_row_actions', array($this, 'media_row_action'), 10, 2);
-        add_action('delete_attachment', array($this, 'delete_attachment_fly_images'));
+        add_action('admin_menu', [$this, 'admin_menu_item']);
+        add_filter('media_row_actions', [$this, 'media_row_action'], 10, 2);
+        add_action('delete_attachment', [$this, 'delete_attachment_fly_images']);
 
-        add_action('switch_blog', array($this, 'blog_switched'));
+        add_action('switch_blog', [$this, 'blog_switched']);
     }
 
     /**
@@ -81,7 +81,7 @@ class Core
             __('Fly Images', 'fly-images'),
             $this->_capability,
             'fly-images',
-            array($this, 'options_page')
+            [$this, 'options_page']
         );
     }
 
@@ -170,7 +170,7 @@ class Core
     /**
      * Add image sizes to be created on the fly.
      */
-    public function add_image_size(string $size_name, int $width = 0, int $height = 0, bool $crop = false): bool
+    public function add_image_size(string $size_name, int $width = 0, int $height = 0, bool|array $crop = false): bool
     {
         if (empty($size_name) || !$width || !$height) {
             return false;
@@ -207,10 +207,10 @@ class Core
     /**
      * Gets a dynamically generated image URL from the Fly_Images class.
      */
-    public function get_attachment_image_src(int $attachment_id = 0, string|array $size = '', bool $crop = null): array
+    public function get_attachment_image_src(int $attachment_id = 0, string|array $size = '', array|bool $crop = null): array
     {
         if ($attachment_id < 1 || empty($size)) {
-            return array();
+            return [];
         }
 
         // If size is 'full', we don't need a fly image
@@ -219,12 +219,11 @@ class Core
         }
 
         // Get the attachment image
-        $image = wp_get_attachment_metadata($attachment_id);
-        if (false !== $image && $image) {
+        if ($image = wp_get_attachment_metadata($attachment_id)) {
 
             // Filter
             if (!apply_filters('fly_mime_type', true, get_post_mime_type($attachment_id))) {
-                return array();
+                return [];
             }
 
             // Determine width and height based on size
@@ -232,7 +231,7 @@ class Core
                 case 'string':
                     $image_size = $this->get_image_size($size);
                     if (empty($image_size)) {
-                        return array();
+                        return [];
                     }
                     $width = $image_size['size'][0];
                     $height = $image_size['size'][1];
@@ -243,33 +242,33 @@ class Core
                     $height = $size[1];
                     break;
                 default:
-                    return array();
+                    return [];
             }
 
-            // Get file path
+            // Get the file path
             $fly_dir = $this->get_fly_dir($attachment_id);
             $fly_file_path = $fly_dir.DIRECTORY_SEPARATOR.$this->get_fly_file_name(basename($image['file']), $width, $height, $crop);
 
-            // Check if file exsists
+            // Check if file exists
             if (file_exists($fly_file_path)) {
                 $image_size = getimagesize($fly_file_path);
                 if (!empty($image_size)) {
-                    return array(
+                    return [
                         'src' => $this->get_fly_path($fly_file_path),
                         'width' => $image_size[0],
                         'height' => $image_size[1],
-                    );
-                } else {
-                    return array();
+                    ];
                 }
+
+                return [];
             }
 
             // Check if images directory is writeable
             if (!$this->fly_dir_writable()) {
-                return array();
+                return [];
             }
 
-            // File does not exist, lets check if directory exists
+            // File does not exist, let's check if directory exists
             $this->check_fly_dir();
 
             // Get WP Image Editor Instance
@@ -292,16 +291,16 @@ class Core
                 // Image created, return its data
                 $image_dimensions = $image_editor->get_size();
 
-                return array(
+                return [
                     'src' => $this->get_fly_path($fly_file_path),
                     'width' => $image_dimensions['width'],
                     'height' => $image_dimensions['height'],
-                );
+                ];
             }
         }
 
         // Something went wrong
-        return array();
+        return [];
     }
 
     /**
@@ -329,11 +328,11 @@ class Core
                 $size_class = join('x', $size);
             }
             $attachment = get_post($attachment_id);
-            $default_attr = array(
+            $default_attr = [
                 'src' => $image['src'],
                 'class' => "attachment-$size_class",
                 'alt' => trim(strip_tags(get_post_meta($attachment_id, '_wp_attachment_image_alt', true))),
-            );
+            ];
             if (empty($default_attr['alt'])) {
                 $default_attr['alt'] = trim(strip_tags($attachment->post_excerpt));
             }

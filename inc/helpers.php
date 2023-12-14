@@ -24,7 +24,7 @@ if (!function_exists('fly_get_attachment_image')) {
     /**
      * Get a dynamically generated image HTML from the JB\FlyImages\Core class.
      */
-    function fly_get_attachment_image(int $attachment_id = 0, array|string $size = '', bool $crop = null, array $attr = array()): string
+    function fly_get_attachment_image(int $attachment_id = 0, array|string $size = '', bool $crop = null, array $attr = []): string
     {
         return JB\FlyImages\Core::get_instance()->get_attachment_image($attachment_id, $size, $crop, $attr);
     }
